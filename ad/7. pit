@@ -1,0 +1,46 @@
+Discuss your thoughts on why point-in-time data are important for model building in general and why in particular it's important for financial data modeling using macroeconomic or financial event studies. 
+Tell us about your experience building a point in time database (or discuss how you would do so).
+
+NOTES
+- When i refer to PIT, i mean point in time.
+- There have been several controversial discussions on weather PIT is worth chasing as data users have no clear validity on the truth behind claims and methods used by data vendors to expose PIT. Some valid claims have argued PIT is generally not available in deep history and some vendors have omitted snaps of PIT that could have been caused due to their data quality issues which is a unfair representation, picking and choosing what to expose. 
+- The methods / definitions of PIT differ from vendor to vendor. eg some vendors are building a lag method that tried to represent the past as was to sell a flavor of PIT. 
+- Regardless of the controversial claims, PIT is still generally important when analyzing historical data and events.
+- A true PIT database would be in the hands of some quant funds that have been snapping all data for several years, in most cases this is a better representation of a true PIT above and beyond what the owners of the data may have (ie the vendors). 
+- I am happy to elaborate on steps, nuances, and challenges of the below mentioned products i worked on in a follow up interview. 
+
+
+POINT IN TIME
+
+Q1 Why is pit important in model building in general
+To alleviate look-ahead bias, representing the truest possible information and markets as was. This allows downstream historical analysis such as backtesting, to be fairly represented by removing look-ahead bias. 
+
+Q2 Why specifically in financial modeling using macro and or event studies
+Large events effect most or the entire financial markets, causing systematic volatility. The best example of this is a black swan event, like natural disasters or pandemics. When modelling history, to be fair to the analysis we must look at the performance of assets not knowing these events were about to happen. Another crucial need for point in time data in financial markets is to view instruments in their historical corporate strucuture as there are many structural changes that takes place in a company throughout its lifetime, usually caused by M&A activity. 
+
+Q3 Showcase experience in working with pit
+
+1. owner of quant research data product: rebuilding bloomberg company financials with pit history
+
+- leveraging daily snaps as was for 40 years of history in .csv or proprietary .out files.
+- instead of looping, re-storing in parquet as the data is columnar.
+- exposing in a graph db and proprietary cube api to be able to call the data for a specified time frame and stitch multiple schema together based on 8 common keys and retrieve only columns of interest (80 popular accounting metrics which are used 90% of the time from a total list of of 15000).
+- leveraging pyspark in a kubernetes platform to use on the large cube and order by several datetime & self made flags to extract the truest pit available given 
+    a. publications and revisions types on metrics provided by the source (the company and or analysts)
+    b. production process nuances by Bloomberg (the vendor)
+    c. quantitative use case in financial markets research
+- building an api that delivers a pandas or spark df with consumer friendly parameters to pull either the latest available or pit time series from the new cube 
+- built with components being reusable where possible, so that other traditional bbg data can also be recreated with a truer pit for easier consumer use (esg, estimates, corporate actions)
+
+
+2. bql api
+
+- product manager for bql: bloomberg's new query language that is cross asset class, delivered in excel, rest api and python (jupyter), with state of the art in database reduction powers and inherently exposes tri temporal point in time capabilities. 
+- tri temporality: ability to expose up to three disparate date fields, eg used in company financials data which has database time series date (to build a consistent frequency of time to display the data, you may wish to fill missing values), as of a certain market publish date (ie when the data was available to the market), for a reporting period (eg apples eps estimate made for a future quarter end 31/03/2025).
+
+
+3. worldscope & ibes v2 pit
+
+- product manager and sql engineer to enhance data sets within qa direct, working on core Reuters owned databases such as worldscope and ibes estimates.
+- exposing a subset of records from the internal only change database from qa direct to provide clients with a partial history of point in time updates.
+- moving to ibes v2 snapping and delivering more frequent updates, every 15 mins, which enables the clients to snap and save almost real time updates to consensus and detailed estimates.

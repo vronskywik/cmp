@@ -1,0 +1,8 @@
+calendarizedDays = metric : String -> Integer {
+    Integer lookbackDays = 360 ;
+    if (this.substring(1,2) == "Q") { lookbackDays = 90 ; }
+    else if (this.substring(1,2) == "S") { lookbackDays = 180 ; }
+    else if (this.substring(1,2) == "T" && this != "TTM") { lookbackDays = 120 ; }
+    
+    return lookbackDays + 30 ;
+}

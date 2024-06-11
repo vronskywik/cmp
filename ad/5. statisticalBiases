@@ -1,0 +1,80 @@
+Notes:
+- This response is relative to dealing with financial data in a quantitatively inclined investment research capacity, specifically anchored around publicly trade-able instruments (eg tickers).
+- We assume there is some level of regulation on the availability, quality, validity and timeliness of this data (e.g. company financials which have to be audited and comply with accounting regulation). 
+- We also assume there are no resource constraints in efforts to remove biases, compared to the real world, where we would have to weigh up the cost/benefit of efforts made to solve for the below biases.
+- Some responses come with examples which may be fictitious, but technically possible.
+- Each response also comes with a "where" section, which highlights where in the data lifecycle the bias usually surfaces.
+- I am happy to expand into methods and products I have built to solve some of these biases in later stage interviews.
+
+1. Selection
+
+Problem: The data sample used does not fairly represent the population. Could also be known as response bias in another discipline or coverage bias, specifically in the context of financial data.
+Example: Credit
+Where: Generally at the analysis level perhaps due to resource/time constraints in analyzing a larger set of data. In alt data, this could apply at vendor/source level given constraints in collecting and or managing a larger more representative universe, countries, sectors and markets could be completely omitted.
+Solutions: At the analyst level, more data can be analyzed with less resources by optimizing the data pipeline and analysis tools. If the vendor coverage is an issue, the analyst may want to subsidize with additional alternate sources to create a more representative universe, but this may introduce other issues such as mapping and different calculation methods / definitions in the data. Efforts will need to be made to standardize across the board. I am happy to delve into how I did this across company financials using multiple sources (worldscope, bloomberg, s&p, factset).
+
+
+2. Sampling
+
+Problem: Sampling method used does not provide equal opportunity for all data in the population set to be fairly included in the sample chosen for analysis.
+Example: In a backtest, only instruments with a sedol are included, where instruments that may not have a sedol for various reasons, would be unfairly omitted from the analysis.
+Where: Generally at the analysis level perhaps due to resource/time constraints in analyzing a larger set of data.
+Solutions: Using the backtesting example, you could make sure all instruments that are publicly active point in time, have the right anchor symbology available before the analysis so that all instruments have a fair chance of being selected given the backtest universe filtering. I am happy to delve into how I have solved this by building a golden source multi asset multi vendor point in time security master and mapping databases to act as the spine of truth for financial databases.
+
+
+3. Survivorship
+
+Problem: Occurs when only surviving assets/instruments are considered for the analysis, leading to an incomplete picture.
+Example: In a backtest of the S&P500, the most recent constituents are used in history as a static set. Omitting any companies that may have existed in the past and including any companies that may not have existed in the past.
+Where: Generally at the analyst level, if you haven't subscribed to the full history of reference indices and or you have not accommodated for dynamic index representation in your analysis.
+Solutions: Leverage a true point in time index history database and use a backtest that allows for a dynamic universe over time. I am happy to delve into my understanding / live use cases of working with historical index data, pro forma data & building index data mimicking products.
+
+
+4. Time
+
+Problem: When the timing of data collection or analysis introduces a systematic error. (adds to point in time issues)
+Example: If the data collection process at the vendor/source level includes one or more manual processes, including humans in the loop, causing a delay to the publication of the data. This is usually evident in larger quantitative risk models, where the ingredients (large universe of deep history financial data, multiple metrics) and the relative rank calculation (compute time heavy) introduces a lag to the final data product publication / update downstream.
+Where: Generally at the data vendor/source level.
+Solutions: This adds to the importance of point in time data. Push the data vendor to add timing rigor to the data production and publication process. AT the analyst level, certain lags could be put in place to realistically represent the true data date/time metadata.
+
+
+5. Look-Ahead
+
+Problem: Could also be known as recall bias in other disciplines, where historical data is corrected.(adds to point in time issues)
+Example: A company or a data vendor has made a mistake in the original publication and it is changed after the fact. 
+Where: Generally at the data vendor / source level.
+Solutions: This is an important aspect of point in time data required for successful quantitative research. Initially, we should seek to obtain a full time series of data from the source which includes all the revisions over time with accurate time stamps. If this is unavailable, alternative methods could be used to try and recreate point in time, e.g. lag methods.
+
+
+6. Attrition
+
+Problem: A certain part of the data is unavailable. 
+Example: Due to regulation around data publication in the middle east between 2005 & 2010, all instruments in our dataset in the middle east are missing certain key metrics between the said dates.
+Where: Generally at the data vendor / source level.
+Solutions: First, understand how to categorize the missing data. Is it over a certain time period, region or other specifically identifiable category with respect to the dataset. Once this is understood, we should strive to get the original source to fill the missing gap, else we should strive to see how we could fill the gap with an alternative source but this could lead to other issues such as the difference in methods to create the data. In looking at the alternative, we could find that it is more viable to go with the alternative source if that suits our study needs. If the above is not available, we can try to intelligently interpolate the missing data but be careful not to introduce other types of biases if we do so. Intelligent interpolation in this instance may mean taking categorical means, medians and or other methods such as rolling averages of the sector or geography of instruments.
+
+
+7. Coverage
+
+Problem: Could also be known as response bias, where the coverage universe of target instruments is reduced. (also related to selection bias)
+Example: eg an IPO, where a company may only have preliminary financials and the source has decided to exclude this data. Here the source may have rules on minimum data required to publish data based validity, key metrics (such as published revenue or earnings) or history.
+Where: Generally at the data vendor/source level.
+Solutions: Push the data vendor to collect historical private company data to allow the inclusion of the newly created companies with some history in their metrics. At the Analyst level, supplement the new company with private company data from an additional source and or apply estimation based on rudimentary (extrapolation based on peers) or more intelligent multi metric statistical methods.
+
+
+
+8. Censoring
+
+Problem: Certain data points are excluded, leading to an incomplete or skewed analysis.
+Example: In the world of alternative data, there is growing regulation to limit certain metrics/features from being published, such as data closely related to PPI (protected personal information).
+Where: Generally at the data vendor/source level.
+Solutions: Due to regulation, it's in the interest of the vendor to not publish such data to protect itself and the investment community from using it. A tight data due diligence process should be used when purchasing data to weed out any ppi or generally risky data. To solve this at the analyst level, you could ask the vendor for or build a picture of non ppi demographic data to replace ppi metrics.
+
+
+
+Other considerations
+
+- Costs to remove biases: getting the data, managing the data
+- Consider running a pilot pre-study: a stage 0 before you take on the project to understand how many biases may potentially come up so you can understand the cost/benefit of proceeding with or without some of the biases.
+- Significance of the biases: are the biases worth spending time to redo surveys and or remove?
+- Some biases available in the general study of statistics have been omitted as they are not so relevant in the field of financial data.

@@ -1,0 +1,26 @@
+/**
+ * Earnings per Share Trailing Twelve Months
+ *
+ * @description 
+ * TRAILING TWELVE MONTHS EARNINGS PER SHARE represent the sum of the interim earnings per share reported in the last twelve months. <br>
+ * 
+ * SOURCES: Worldscope
+ * 
+ * Value1A: TRAILING_TWELVE_MONTHS_EARNINGS_PER_SHARE
+ * Value1N: 18264
+ * 
+ * @param fiscalPeriod
+ * historical annual item (eg TTM, FY0)
+ * 
+ * @example 
+ * GOOG.epsWS("TTM")
+ * 
+ * @tags Income Statement, worldscope fundamentals
+ */
+
+epsTrailingWS = metric (String fiscalPeriod = "TTM") : ShareBased -> TimeSeries {
+    return this.worldscope(Enum.TRAILING_TWELVE_MONTHS_EARNINGS_PER_SHARE,"TTM");
+}
+
+imports
+worldscope,Metric,ad89b573-df42-31ff-897d-4a5bcb4039fd

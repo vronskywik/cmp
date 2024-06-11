@@ -1,0 +1,53 @@
+/**
+ * Interest Coverage
+ *
+ * @description 
+ * INTEREST COVERAGE = EBIT / Interest Expense
+ * 
+ * DFN: Interest Coverage takes earnings before interest and tax divided by the interest expense
+ * 
+ * 
+ * SOURCES: Worldscope
+ * 
+ * V1:ebitWS()
+ * V2:interestExpenseWS()
+ * 
+ * @param fiscalPeriod
+ * historical annual and interim items
+ * 
+ * @example 
+ * GOOG.interestCoverageWS("TTM")
+ * 
+ * @example 
+ * GOOG.interestCoverageWS("FQ0")
+ * 
+ * @example 
+ * GOOG.interestCoverageWS("FY-1")
+ * 
+ * @tags worldscope ratios
+ */
+
+interestCoverageWS = metric (String fiscalPeriod = "TTM") : ShareBased -> TimeSeries {
+    Currency local = this.currency();
+    String fiscalPeriodLatest = fiscalPeriod.fiscalPeriodTranslate(false);
+    fiscalPeriod = fiscalPeriod.fiscalPeriodTranslate(true);
+    Integer lookbackDays = fiscalPeriod.calendarizedDays;
+    
+    if(!fiscalPeriod.equalsIgnoreCase("TTM") && !fiscalPeriod.equalsIgnoreCase("LTM") && !fiscalPeriod.substring(0,1).equalsIgnoreCase("F")){
+        print("The chosen fiscalPeriod, "+ fiscalPeriod +", is not supported. Results are based on TTM (trailing twelve months)");
+    
+    }
+    
+    timeseries ebit = this.ebitWS(fiscalPeriod).lookback(lookbackDays,Enum.DAYS).convert(local);
+    timeseries intExp = this.interestExpenseWS(fiscalPeriod).lookback(lookbackDays,Enum.DAYS).convert(local);
+    
+    DateSet zeros = intExp.hasValue(0,0).intersect(intExp.validDates);
+    
+    Number NaN = 0/0;
+    TimeSeries tempIntExp = deprecated_astimeseries(NaN).slice(zeros).setUnits(intExp.unitType.toString());
+    
+    intExp = tempIntExp.stitch(intExp,Enum.MERGE);
+    
+    timeseries intCov = ebit.divide(intExp,Enum.BOTH_ONLY);
+    return intCov;
+}

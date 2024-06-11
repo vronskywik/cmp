@@ -1,0 +1,30 @@
+/**
+ * Net Sales (or) Revenues
+ *
+ * @description 
+ * NET SALES OR REVENUES represent gross sales and other operating revenue less discounts, returns and allowances.<br>
+ * 
+ * SOURCES: Worldscope
+ * 
+ * Value1A: NET_SALES_OR_REVENUES
+ * Value1N: 1001
+ * 
+ * 
+ * @param fiscalPeriod
+ * historical annual item (eg TTM, FY0), interim item (eg FQ0,FS0,FT0) 
+ * 
+ * @example 
+ * GOOG.costOfGoodsSoldWS("TTM")
+ * 
+ * @example 
+ * GOOG.costOfGoodsSoldWS("FQ0")
+ * 
+ * @example 
+ * GOOG.costOfGoodsSoldWS("FY-1")
+ * 
+ * @tags Income Statement, worldscope fundamentals
+ */
+
+netSalesWS = metric (String fiscalPeriod = "TTM") : ShareBased -> TimeSeries {
+    return this.worldscope(Enum.NET_SALES_OR_REVENUES,fiscalPeriod) ;
+}

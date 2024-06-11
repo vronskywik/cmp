@@ -1,0 +1,56 @@
+/**
+ * Enterprise Value
+ *
+ * @description 
+ * Enterprise Value is arrived using the below formula
+ * 
+ * Market Capitalization + Preferred Stock + Minority Interest + Net Debt. <br>
+ * 
+ * Market Capitalization is arrived by multiplying  price close from Datastream and Shares Outstanding from Worldscope (5301) <br>
+ * For companies with more than one type of common/ordinary share, common shares outstanding represents the combined shares adjusted to reflect the par value of the share type identified in field 06005 - Type of Share <br>
+ * 
+ * Preferred Stock is from Worldscope (3451) <br>
+ * 
+ * Minority Interest is from Worldscope (3426) <br>
+ * 
+ * Net Debt is from Worldscope (18199) <br>
+ * 
+ * SOURCES: Worldscope, Datastream
+ * 
+ * @param fiscalPeriod
+ * historical annual item (eg TTM, FY0), interim item (eg FQ0,FS0,FT0) 
+ * 
+ * @example 
+ * GOOG.enterpriseValueWS("LAST")
+ * 
+ * @example 
+ * GOOG.enterpriseValueWS("FQ0")
+ * 
+ * @example 
+ * GOOG.enterpriseValueWS("FY-1")
+ * 
+ * @tags Balance Sheet, worldscope fundamentals
+ */
+
+enterpriseValueWS = metric (String fiscalPeriod = "LAST") : ShareBased -> TimeSeries {
+    Currency local = this.currency();
+    String fiscalPeriodLatest = fiscalPeriod.fiscalPeriodTranslate(false);
+    Integer lookbackDays = fiscalPeriod.calendarizedDays;
+    
+    Timeseries Prc = This.close.convert(local);
+    Timeseries Shrs = This.worldscope(Enum.COMMON_SHARES_OUTSTANDING,fiscalPeriodLatest).lookback(lookbackDays,Enum.DAYS).convert(local);
+    TimeSeries NtDebt = This.worldscope(Enum.NET_DEBT,fiscalPeriodLatest).lookback(lookbackDays,Enum.DAYS).convert(local);
+    TimeSeries MinInt = This.worldscope(Enum.MINORITY_INTEREST_2,fiscalPeriod).lookback(lookbackDays,Enum.DAYS).convert(local);
+    Timeseries PrefStk = This.worldscope(Enum.PREFERRED_STOCK,fiscalPeriod).lookback(lookbackDays,Enum.DAYS).convert(local);
+    
+    Timeseries MktCap = Prc.multiply(Shrs,Enum.DEFAULT);
+    Timeseries Ev = MktCap.add(NtDebt,Enum.DEFAULT).add(MinInt,Enum.DEFAULT).add(PrefStk,Enum.DEFAULT);
+    
+    Return Ev;
+}
+
+imports
+worldscope,Metric,4622d831-5b0c-3eb1-af9f-8e97ab7887ea
+multiply,Metric,5f7cd0f2-5339-3f5f-8471-625831b9e19e
+add,Metric,b36c5179-68f3-3921-8560-44e6275eaa8a
+close,Metric,311fe3e7-dcdb-3097-a43b-9d94f3b8dff6

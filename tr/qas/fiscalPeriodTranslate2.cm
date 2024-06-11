@@ -1,0 +1,18 @@
+/**
+ * Fiscal String Translater
+ *
+ * @description 
+ * When the parameter TTM or LATEST is used in a ratio calculation, this metric translates it to TTM for Cash Flow and Income Sheet items (set the parameter to true) or LATEST for Balance Sheet items (set the paramter to false).
+ * 
+ * @param isTTM
+ * Change to TTM if Appropriate
+ * 
+ * @example 
+ * "TTM".fiscalStringTranslate(false)
+ */
+
+fiscalPeriodTranslate2 = metric (Boolean isTTM = true) : String -> String {
+    if ( this.substring(0,2) == "FY" ) { return this ; }
+    if  (isTTM == true) { return "TTM" ; }
+    return "TTM" ;
+}

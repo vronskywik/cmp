@@ -1,0 +1,116 @@
+Q: Based on your beliefs and experiences: What are the main difficulties and pitfalls when monitoring a data ingestion pipeline? 
+What are different types of data issues you should monitor in data pipelines? What should one look at, and what actions can be taken?
+
+EXPERIENCE
+- I have built and managed data pipelines over my career when building multiple data products at Refinitiv, Bloomberg & various buy side institutions. Happy to delve into the challenges & nuances in the following products. 
+- Noteablely Bloomberg Cubes & corresponding historically reshaped point in time versions of company financials, estimates & adjusted pricing found on BEAP where available as optional "history".
+- Refinitiv QA Direct Sec Master & Map v2
+- Worldscope point in time
+- Thomson Reuters classification
+- Thomson Reuters Indices
+- IBES v2
+- Starmine Models
+- Datastream Economics
+- Bloomberg Economics
+
+NOTES
+- In a follow up interview, I am happy to elaborate on the techniques used & products built to review the shape of datasets, understand its nuances in relation to similar data in the same family, 
+build transformation pipelines, data completeness / timeliness / quality flags, real time monitoring tools (visual and proactive alerting), remediation processes and documentation. 
+- Have a good repo of up to date documentation around the data, the tools used and the processes.
+- Have a portfolio of languages, databases and monitoring tools to accommodate for a variety of data types that are going to come in. Optimization is key, there is no one stop design to catch all, nor is it wise to use too many different processes.
+- Build components that are easily reusable across different data sets.
+- Infrastructure: Learn to face off cloud vs on prem weighing up the costs and benefits of each route.
+- Generally, push towards cloud, snowflake, databricks & like off the shelf tools for newer proof of concepts as this is usually faster time to market and safer. May not necessarily be the best solution for a longer term production build. 
+
+DATA INGESTION PIPELINE STEPS
+
+0. Use case
+
+- What: Why is the data being procured
+- Action: Understand the use case, so you can work backward to satisfy this at a minimum in the data lifecycle / pipeline setup. 
+
+1. Sources
+
+- What: Different Vendor/source level qualitative nuances, data summary. 
+- Actions: Understand the competitive advantages, use cases, proof of concept studies and limitations of the different data vendors coming in from a qualitative 
+perspective (including choice for symbology, coverage, mapping, any third party licensing requirements, ddq' etc).
+
+2. Structure
+
+- What: How is the data stored? Checking for file & scherma changes sytematically. Is it relational? Would multiple tables be required to form a complete update cycle? 
+What is the format? e.g. parquet, json, csv etc.
+- Actions: Bucket each data product inbound by the structures offered, understand if they are the best options offered per vendor (based on alternatives from 
+the vendor and any third parties). Find a balance of opting for an optimized number of structures upstream to deal with. Are there any advantages or disadvantages 
+in taking one type of structure per data product vs the alternatives offered? Look at utalising auto schema detection libraries or build one. Simple steps are crucial like 
+checking for column count changes, column name changes, data type changes, deviation of the size of updates coming through
+
+3. Delivery
+
+- What: How is the data being distributed? eg files, sql/oracle updates, rest api, snowflake? Another proprietary third party 
+- Actions: Optimize which delivery mechanism per data set provides a balance between timeliness, engineering resource requirements downstream, least IT/Infrastructure challenges, 
+most secure based on company standards. If only a subset of the data is required, is there a smart api that can be used instead of taking receipt of the entire data set everyday. 
+This should be use case based unless you can afford to take the entire dataset and store it (which may make sense in some instances where a data vendor charges extra to revisit history)
+
+4. Reference & Metadata
+
+- What: What reference data, metadata, symbology (id's) and any other complimentary data does each dataset offer
+- Actions: Build the security master and mapping system to accommodate the collective reference data / symbology provided by each of the data sets so that 
+upstream use cases across multiple datasets is possible & effective. 
+
+5. Storage
+
+- What: How will the data be stored? Will there be multiple levels of storage required based on different use cases? Does it comply with internal data governance? 
+- Actions: Balance the different stages of data storage from raw -> data warehouse -> data lake. What users will be accessing from each level? Do you need a to impliment a
+less frequently updated mirror for disaster recovery purposes? Ensure processes and storage upkeep data integrity, confidentiality, and compliance with data protection regulations. 
+I am happy to elaborate on how I have staged data in past data lake projects. 
+
+6. Updates
+
+- What: How often does the dataset update per data product.
+- Actions: Understand how often appends can happen, how often corrections can happen and how to accommodate for both in a timely manner. 
+Understand what is the most optimal update frequency to satisfy the use case/s. Build a mechanism to take only new data rather than loading all the data everytime. Importantly, to preserve point in time,
+keep historical corrections of data.
+
+7. Sequencing
+
+- What: From a set of data products, do some updates need to precede others? 
+- Actions: Here we are looking to build pipelines with independent data sets at the front of the queue (eg security master, corporate actions, symbology,
+instrument reference) and then followed by data sets that come to stick onto the security master system based on priority of importance driven by the 
+analytics needs real time vs delayed reporting downstream. You should also invest in data orchestration tools to help manage sequencing and alerting of updates (eg apache airflow).
+
+8. Quality & Remediation
+
+- What: Making sure the timeliness, completeness & technical aspects are checked on any new data update.
+- Actions: Start with basic technical data checks (types, changes to schema, missing data etc), then move to data family specific tests (e.g. spikes for time series data), 
+then more sophisticated tests based on the data set (specific nuances). The checks will take longer on the initial history build and then apply systematic alerts prioritized by 
+importance of upstream needs. Alerts can be in real time and or email -like alerts. Following this, there should be tools and documentation to help remediation. 
+
+9. Upstream delivery
+
+- What: What are the internal upstream delivery mechanisms (api vs direct analytics)? Are permissions put in place?
+- Action: Build out of a different api's to allow multiple user types to discover, interact with and use the data. Making sure the right permissions are in place based on 
+internal regulation and the data usage licensing. 
+
+10. Consumer review
+
+- What: Initial understanding and continual review of upstream use for data.
+- Actions: It's key to review the use cases your data & pipelines are feeding, from improvements to timeliness, coverage and quality, continually working with 
+upstream can help optimize many of the facets discussed here. 
+
+11. Vendor review
+
+- What: Initial understanding (independent and in conjunction with the data vendors product team) & continual review of the source data.
+- Actions: The independent review of data should be done first without any biases to understand how the data behaves and how it updates, you can also connect with 
+the data vendors product team following that to understand their SLA's on the data and delivery, continually proactive review of the source data will help you keep on top 
+of changes to the data which may affect the pipeline process. Sign up to alerts for changes in the data published by the source but also do your own systematic checks independently.
+
+12. Statistics
+
+- What: Understanding data update patterns and changes over time
+- Actions: Tools and libraries to help run periodic tests on data sets and update logs to understand SLA's on data. Useful for audits & commercial negotiations during contract renewals. Logging 
+methods shoudl be robust to include errors or anomalies during the lifecycle of the data.
+
+13. Documentation
+
+- What: Notes on pipeline processes. 
+- Actions: Create accessible Well typed, standardized & defined notes on pipelines & remediation. Make sure they are updated on a regular basis.

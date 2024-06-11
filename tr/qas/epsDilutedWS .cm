@@ -1,0 +1,31 @@
+/**
+ * Earnings per Share Diluted
+ *
+ * @description 
+ * EARNINGS PER SHARE – FULLY DILUTED - FISCAL represents earnings based on average fully diluted common shares. For companies with more than one type of common/ordinary share, earnings per share is based on combined shares adjusted to reflect the par value of the share type identified in field 06005 Type of share.
+ * For securities, the history is back to 1987. <br>
+ * 
+ * SOURCES: Worldscope
+ * 
+ * Value1A: FISCAL_EARNINGS_PER_SHARE_FULLY_DILUTED_YEAR
+ * Value1N: 10030
+ * 
+ * 
+ * @param fiscalPeriod
+ * historical annual item (eg TTM, FY0), interim item (eg FQ0,FS0,FT0) 
+ * 
+ * @example 
+ * GOOG.epsDilutedWS("TTM")
+ * 
+ * @example 
+ * GOOG.epsDilutedWS("FQ0")
+ * 
+ * @example 
+ * GOOG.epsDilutedWS("FY-1")
+ * 
+ * @tags Income Statement, worldscope fundamentals
+ */
+
+epsDilutedWS = metric (String fiscalPeriod = "TTM") : ShareBased -> TimeSeries {
+    return this.worldscope(Enum.FISCAL_EARNINGS_PER_SHARE_FULLY_DILUTED_YEAR,fiscalPeriod);
+}
